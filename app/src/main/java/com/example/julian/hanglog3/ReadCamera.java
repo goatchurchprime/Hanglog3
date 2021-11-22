@@ -42,7 +42,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import org.opencv.android.BaseLoaderCallback;
+/*import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.Utils;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
@@ -57,7 +57,23 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 import org.opencv.aruco.Dictionary;
 import org.opencv.imgproc.Imgproc;
+*/
 
+
+public class ReadCamera extends Thread {
+    int skippedframes = 0;
+    int framesread = 0;
+
+    ReadCamera(LLog3 lllog3, Context lapplicationcontext) {
+    }
+
+    public void gologpics(boolean isChecked) {
+    }
+}
+
+
+
+/*
 class ReceivedImage {
     int framenumber;
     Calendar frametime;
@@ -95,6 +111,7 @@ Log.i("hhanglogCCgray", "gray: " + rgbMat.height()+","+rgbMat.width());
 
 
 };
+
 
 public class ReadCamera extends Thread {
 
@@ -547,3 +564,4 @@ Log.d("hhanglogC8", "buffer taken "+receivedimage.framenumber);
     }
 
 }
+*/

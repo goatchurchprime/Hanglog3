@@ -27,7 +27,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.opencv.android.OpenCVLoader;
+//import org.opencv.android.OpenCVLoader;
 
 
 import java.io.FileOutputStream;
@@ -86,7 +86,7 @@ public class LLog3 extends AppCompatActivity {
         readsensor = new ReadSensor((SensorManager)getSystemService(Context.SENSOR_SERVICE),
                                     (LocationManager)getSystemService(Context.LOCATION_SERVICE));
         //Toast.makeText(getBaseContext(), "readsensormade", Toast.LENGTH_LONG).show();
-        Toast.makeText(getBaseContext(), "OpenCVLoader "+String.valueOf(OpenCVLoader.initDebug()), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getBaseContext(), "OpenCVLoader "+String.valueOf(OpenCVLoader.initDebug()), Toast.LENGTH_LONG).show();
 
         for (int i = 0; i < Build.SUPPORTED_ABIS.length; i++)
             Log.i("hhanglogIqqqP", String.format(Build.SUPPORTED_ABIS[i]));
@@ -141,11 +141,11 @@ public class LLog3 extends AppCompatActivity {
         gologpics.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton c, boolean isChecked) {
-                try {
+//                try {
                     readcamera.gologpics(isChecked);
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
+           //                } catch (CameraAccessException e) {
+//                    e.printStackTrace();
+//              }
             }
         });
 
