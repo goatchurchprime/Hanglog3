@@ -50,13 +50,20 @@ public class GraphPlot {
     }
 
     void SetNeckRangeMode(boolean bneckrangeonswitch) {
-        if (bneckrangeonswitch) {
-            Nneckpoints = 0;
-            neckrangemode = 1;
-            northorient0 = (float) cpos.northorientA;
+        Log.i("hhanglogM", cpos.datacount.toString());
+        if (cpos.datacount.containsKey('N') || cpos.datacount.containsKey('d')) {
+            neckrangemode = (bneckrangeonswitch ? 3 : 0);
         } else {
-            neckrangemode = 2;
+            if (bneckrangeonswitch) {
+                Nneckpoints = 0;
+                neckrangemode = 1;
+                northorient0 = (float) cpos.northorientA;
+            } else {
+                neckrangemode = 2;
+            }
         }
+        Log.i("hhanglogM", "neckrangemode "+neckrangemode);
+
     }
 
     public void draworient(double northorient, double pitch, double roll, Paint paint) {
@@ -89,6 +96,23 @@ public class GraphPlot {
             tiltycanvas.drawText(String.format("calib: %d%d%d%d", ((cpos.orientcalibration>>6) & 3), ((cpos.orientcalibration>>4) & 3), ((cpos.orientcalibration>>2) & 3), ((cpos.orientcalibration>>0) & 3)), tiltycanvas.getWidth()-200, tiltycanvas.getHeight()-20, mPaint2);
     }
 
+    public void drawstuffsprogs()
+    {
+        tiltycanvas.drawColor(mColorBackground);
+        float sprogdelaydecayfactor = 0.2F;
+        float barwidth2 = vwidth*0.08F;
+        float barwidth3 = barwidth2*0.8F;
+        float barheight2 = 8.0F;
+        for (int i = 0; i < 4; i++) {
+            cpos.sprogpressureDelay[i] += sprogdelaydecayfactor*(cpos.sprogpressure[i] - cpos.sprogpressureDelay[i]);
+            float barx = (i+1)*vwidth/5.0F;
+            float bary = (float)((cpos.sprogpressure[i]*0.8+0.1)*vheight);
+            float baryD = (float)((cpos.sprogpressureDelay[i]*0.8+0.1)*vheight);
+            tiltycanvas.drawRect(barx-barwidth3, Math.min(baryD, bary), barx+barwidth3, Math.max(baryD, bary), mPaint);
+            tiltycanvas.drawRect(barx-barwidth2, bary-barheight2, barx+barwidth2, bary+barheight2, mPaint2);
+        }
+    }
+
     public void drawstuffneckrange(double neckshake, double necknod) {
         tiltycanvas.drawColor(mColorBackground);
         tiltycanvas.drawText(String.format("neckshake: %.2f", neckshake), 10, 60, mPaintText);
@@ -99,6 +123,7 @@ public class GraphPlot {
 
         tiltycanvas.drawLines(neckpointsList, 0, Nneckpoints*4, mPaint2);
     }
+
     public void addpointneckrange(double neckshake, double necknod) {
         // lines are sequence of segments which need to be
         neckpointsList[Nneckpoints*4] = (float)(0.5*tiltycanvas.getWidth());
@@ -123,9 +148,11 @@ public class GraphPlot {
 
     // getting here about every 250ms
     public void drawstuff() {
-        if (neckrangemode == 0)
+        if (neckrangemode == 0) {
             drawstuffhanglog();
-        else {
+        } else if (neckrangemode == 3) {
+            drawstuffsprogs();
+        } else if ((neckrangemode == 1) || (neckrangemode == 2)) {
             double neckshake = (((cpos.northorientA - northorient0)+360+180)%360)-180;
             double necknod = cpos.pitchA;
             if (neckrangemode == 1) {

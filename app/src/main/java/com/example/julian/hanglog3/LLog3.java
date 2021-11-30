@@ -41,11 +41,11 @@ public class LLog3 extends AppCompatActivity {
     TextView epicipnum;
     EditText epicfile;
 
-    String[] lepicipnumubx = new String[4];
-    int[] lepicipnumubxPCconns = new int[4];
-    int[] lepiccountubxPCmsgs = new int[4];
-    TextView[] epicipnumubx = new TextView[4];
-    TextView[] epicubxbytes = new TextView[4];
+    String[] lepicipnumubx = new String[5];
+    int[] lepicipnumubxPCconns = new int[5];
+    int[] lepiccountubxPCmsgs = new int[5];
+    TextView[] epicipnumubx = new TextView[5];
+    TextView[] epicubxbytes = new TextView[5];
 
     int nepic = 0;
     boolean bhotspotmode;
@@ -86,7 +86,7 @@ public class LLog3 extends AppCompatActivity {
         readsensor = new ReadSensor((SensorManager)getSystemService(Context.SENSOR_SERVICE),
                                     (LocationManager)getSystemService(Context.LOCATION_SERVICE));
         //Toast.makeText(getBaseContext(), "readsensormade", Toast.LENGTH_LONG).show();
-//        Toast.makeText(getBaseContext(), "OpenCVLoader "+String.valueOf(OpenCVLoader.initDebug()), Toast.LENGTH_LONG).show();
+        //Toast.makeText(getBaseContext(), "OpenCVLoader "+String.valueOf(OpenCVLoader.initDebug()), Toast.LENGTH_LONG).show();
 
         for (int i = 0; i < Build.SUPPORTED_ABIS.length; i++)
             Log.i("hhanglogIqqqP", String.format(Build.SUPPORTED_ABIS[i]));
@@ -171,8 +171,7 @@ public class LLog3 extends AppCompatActivity {
                 graphplot.SetNeckRangeMode(isChecked);
             }
         });
-
-        epicwords.setText("yeep UBv2021-04-04\n");
+        epicwords.setText("yeep UBv2021-11-30\n");
     }
 
     float ang = 0;

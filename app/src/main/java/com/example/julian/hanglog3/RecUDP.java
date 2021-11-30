@@ -80,9 +80,9 @@ class SocketServerReplyThread extends Thread {
             int h3 = inputStream.read();
             Log.i("hhanglogX", String.format("thread%d socket incoming bytes %x %x %x %x", threadcount, h0&0xFF, h1&0xFF, h2&0xFF, h3&0xFF));
 
-            // connection from ESP32 with data header line AAAA, BBBB, CCCC, or @@@@
+            // connection from ESP32 with data header line AAAA, BBBB, CCCC, or ascii streams @@@@ or DDDD
             // enters this loop
-            if ((h0 == h1) && (h0 == h2) && (h0 == h3) && (h0 >= '@') && (h0 <= 'C')) {
+            if ((h0 == h1) && (h0 == h2) && (h0 == h3) && (h0 >= '@') && (h0 <= 'D')) {
                 ubxI = h0 - '@';
                 ubxILetter = (char)h0;
 
@@ -93,18 +93,22 @@ class SocketServerReplyThread extends Thread {
                 recudp.llog3.lepicipnumubx[ubxI] = String.format("r%s %s,%d", ubxILetter, hostThreadSocket.getInetAddress().getCanonicalHostName(), llog3.lepicipnumubxPCconns[ubxI]);
 
                 byte[] buff = new byte[1000];
-                StringBuffer sb0 = (ubxI == 0 ? new StringBuffer() : null);
+                StringBuffer sb0 = ((ubxI == 0) || (ubxI == 4) ? new StringBuffer() : null);
+                if (ubxI == 4)
+                    sb0.append('d'); // prepend these strings with a 'd'
 
                 // this is the receiving stream loop
                 while (true) {
                     int x = inputStream.read(buff);
                     if (x != -1) {
-                        if (ubxI == 0) {  // ascii hanglog stream
+                        if ((ubxI == 0) || (ubxI == 4)) {  // ascii hanglog stream
                             sb0.append(new String(buff, 0, x));
                             while (true) {
                                 int il = sb0.indexOf("\n");
                                 if (il == -1)
                                     break;
+                                if (ubxI == 4)
+                                    sb0.insert(il+1, 'd');
                                 recudp.writefostream(sb0.substring(0, il+1).getBytes(), il+1);
                                 sb0.delete(0, il+1);
                             }
@@ -404,7 +408,8 @@ class RecUDP extends Service {
     UBXstreaminfo[] ubxstreaminfos = { new UBXstreaminfo('@'),
                                        new UBXstreaminfo('A'),
                                        new UBXstreaminfo('B'),
-                                       new UBXstreaminfo('C') };
+                                       new UBXstreaminfo('C'),
+                                       new UBXstreaminfo('D') };  // final one is a second ascii stream (with @) all going to same output
 
     long mstamp0 = 0;
     int fostreamlinesP = 0;
@@ -412,7 +417,7 @@ class RecUDP extends Service {
     String fname = null;
     File[] fdataUBX = new File[4];
     FileOutputStream[] fostreamUBX = new FileOutputStream[4];
-    SocketServerReplyThread[] fosocketthread = new SocketServerReplyThread[4];
+    SocketServerReplyThread[] fosocketthread = new SocketServerReplyThread[5];
 
     String ddhost = null; // set this to request socket to open
     int ddport = -1;
@@ -694,7 +699,7 @@ class RecUDP extends Service {
                     }
                 }
             });
-            mstamp0 = mstamp + 250;
+            mstamp0 = mstamp + (((llog3.graphplot != null) && (llog3.graphplot.neckrangemode == 3)) ? 50 : 250);
         }
     }
 

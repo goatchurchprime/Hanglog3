@@ -11,6 +11,9 @@ public class CurrentPos {
     public int vwidth = 0;
     public int vheight = 0;
 
+    public double[] sprogpressure = new double[4];
+    public double[] sprogpressureDelay = new double[4];
+
     public double northorient = 0.0, pitch = 0.0, roll = 0.0;
     public int orientcalibration = -1;
     public double northorientA = 0.0, pitchA = 0.0, rollA = 0.0;
@@ -24,8 +27,8 @@ public class CurrentPos {
 
     public Bitmap cameraview = null;
 
-    Pattern pZ = Pattern.compile("^Zt[0-9A-F]{8}x[0-9A-F]{4}y[0-9A-F]{4}z[0-9A-F]{4}a[0-9A-F]{4}b[0-9A-F]{4}c[0-9A-F]{4}w([0-9A-F]{4})x([0-9A-F]{4})y([0-9A-F]{4})z([0-9A-F]{4})");
-    Pattern paZ = Pattern.compile("^aZt[0-9A-F]{8}x([0-9A-F]{4})y([0-9A-F]{4})z([0-9A-F]{4})");
+    //Pattern pZ = Pattern.compile("^Zt[0-9A-F]{8}x[0-9A-F]{4}y[0-9A-F]{4}z[0-9A-F]{4}a[0-9A-F]{4}b[0-9A-F]{4}c[0-9A-F]{4}w([0-9A-F]{4})x([0-9A-F]{4})y([0-9A-F]{4})z([0-9A-F]{4})");
+    //Pattern paZ = Pattern.compile("^aZt[0-9A-F]{8}x([0-9A-F]{4})y([0-9A-F]{4})z([0-9A-F]{4})");
 
     public double s16(String d) {
         int j = Integer.valueOf(d, 16);
@@ -39,6 +42,11 @@ public class CurrentPos {
         int j = (hexchar(data[i])<<12) + (hexchar(data[i+1])<<8) + (hexchar(data[i+2])<<4) + (hexchar(data[i+3]));
         return (j < 32768 ? j : j - 65536);
     }
+    public int s6(byte[] data, int i) {
+        int j = (hexchar(data[i])<<20) + (hexchar(data[i+1])<<16) + (hexchar(data[i+2])<<12) + (hexchar(data[i+3])<<8) + (hexchar(data[i+4])<<4) + (hexchar(data[i+5]));
+        return (j < 0x800000 ? j : j - 0x1000000);
+    }
+
 
     public String showdatacount() {
         sb.setLength(0);
@@ -131,6 +139,14 @@ public class CurrentPos {
                 ypos = (lat - lat0)*nyfac;
                 alt = lalt;
             }
+        }
+
+        // "Nt00000000s000000r000000\n"
+        if ((data[0] == 'N') || ((data[0] == 'd') && (data[1] == 'N'))) {
+            int i = (data[0] == 'd' ? 1 : 0);
+            sprogpressure[0 + i*2] = s6(data, 11 + i) / 1024.0;
+            sprogpressure[1 + i*2] = s6(data, 18 + i) / 1024.0;
+            //Log.i("hhanglogM", "sprog "+sprogpressure[0 + i*2] + ", "+sprogpressure[1 + i*2]);
         }
     }
 }
